@@ -22,14 +22,12 @@ class ConnectionManager:
         self.solutions: Dict[str, str] = {}
 
     def load_solutions_from_db(self):
-        print("Loading code blocks from DB...")
         with Session(engine) as session:
             blocks = session.exec(select(CodeBlock)).all()
             for block in blocks:
                 self.solutions[str(block.id)] = block.solution
                 self.code_states[str(block.id)] = block.template
                 print(f"Loaded: {block.title} (ID: {block.id})")
-        print("✅ Code blocks loaded.")
 
     def connect(self, code_block_id: str, web_socket: WebSocket):
 
@@ -44,17 +42,26 @@ class ConnectionManager:
     async def broadcast_code(self, code_block_id: str, code: str):
         self.code_states[code_block_id] = code
         for conn in self.active_students_connections.get(code_block_id, []):
-            await conn.send_json({"event": "code_update", "code": code, })
+            await conn.send_json({"type": "code_update", "code": code, })
+        mentor_conn = self.mentor_connections.get(code_block_id)
+        if mentor_conn:
+            await mentor_conn.send_json({"type": "code_update", "code": code, })
 
         # Check solution match
         if normalize_code(self.solutions.get(code_block_id)) == normalize_code(code):
             for conn in self.active_students_connections.get(code_block_id):
-                await conn.send_json({"event": "solution_match"})
+                await conn.send_json({"type": "solution_match"})
+            mentor_conn = self.mentor_connections.get(code_block_id)
+            if mentor_conn:
+                await mentor_conn.send_json({"type": "solution_match"})
 
     async def broadcast_student_count(self, code_block_id: str):
         count = self.get_students_count(code_block_id)
         for conn in self.active_students_connections.get(code_block_id, []):
-            await conn.send_json({"event": "students_count", "count": count})
+            await conn.send_json({"type": "students_count", "students_count": count})
+        mentor_conn = self.mentor_connections.get(code_block_id)
+        if mentor_conn:
+            await mentor_conn.send_json({"type": "students_count", "students_count": count})
 
     def is_mentor(self, code_block_id: str, web_socket: WebSocket) -> bool:
         return self.mentor_connections.get(code_block_id) == web_socket
@@ -74,12 +81,8 @@ class ConnectionManager:
     def is_solution_correct(self, code_block_id: str, current_code: str) -> bool:
         solution = self.solutions.get(code_block_id)
         if not solution:
-            print("false")
             return False
         if normalize_code(current_code) == normalize_code(solution):
-            print(normalize_code(current_code))
-            print(normalize_code(solution))
-            print('true')
             return True
 
 
@@ -100,7 +103,6 @@ async def web_socket_endpoint(block_id: str, web_socket: WebSocket):
 
     try:
         while True:
-
             data = await web_socket.receive_json()
             if data["type"] == "code_update" and role == "student":
                 await manager.broadcast_code(block_id, data["code"])
@@ -109,10 +111,24 @@ async def web_socket_endpoint(block_id: str, web_socket: WebSocket):
         result = manager.disconnect(block_id, web_socket)
         if result == "mentor_left":
             for student in manager.get_students(block_id)[:]:
-                await student.send_json({"type": "redirect"})
+                await student.send_json({"type": "redirect", "code": manager.solutions[block_id]})
                 await student.close()
             manager.active_students_connections[block_id] = []
             manager.code_states[block_id] = manager.solutions[block_id]
+
+            with Session(engine) as session:
+                block = session.exec(select(CodeBlock).where(CodeBlock.id == int(block_id))).first()
+            if block:
+                manager.code_states[block_id] = block.template
+        else:
+            await manager.broadcast_student_count(block_id)
+
+
+@router.get("/codeblocks")
+def get_codeblocks():
+    with Session(engine) as session:
+        blocks = session.exec(select(CodeBlock)).all()
+        return blocks
 
 
 manager = ConnectionManager()
