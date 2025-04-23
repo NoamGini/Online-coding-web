@@ -1,0 +1,35 @@
+.code-block-container {
+
+    position: relative;
+    width: 100%;
+
+}
+
+.editor-header {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    display: flex;
+    justify-content: flex-end;
+    z-index: 1;
+}
+
+.role-indicator {
+    background-color: #f3e6e6;
+    color: rgb(0, 0, 0);
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    box-shadow: 0 0 4px rgba(0, 0, 0, 0.3);
+}
+
+.role-dot {
+    width: 8px;
+    height: 8px;
+    background-color: #ff9800;
+    /* orange for editor */
+    border-radius: 50%;
+}
