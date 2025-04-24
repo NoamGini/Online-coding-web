@@ -90,7 +90,7 @@ export default function BlockCodePage() {
 
   useEffect(() => {
     // Initialize WebSocket connection
-    const socket = new WebSocket(`ws://localhost:8000/ws/${id}`);
+    const socket = new WebSocket(`{process.env.REACT_APP_WS_URL}/ws/${id}`);
 
     socket.onmessage = (event) => {
       const data = JSON.parse(event.data);
