@@ -120,6 +120,7 @@ class ConnectionManager:
 
 @router.websocket("/ws/{block_id}")
 async def web_socket_endpoint(block_id: str, web_socket: WebSocket):
+    print(f"Client {web_socket} trying to connect...")
     await web_socket.accept()
     # add the web socket to the mentor connection dict
     manager.connect(block_id, web_socket)
