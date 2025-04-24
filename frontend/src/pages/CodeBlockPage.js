@@ -9,18 +9,22 @@ export default function BlockCodePage() {
   //get the title from state when nvigating to this page
   const location = useLocation();
   const title = location.state?.title || "";
+
   //get id param form the path
   const { id } = useParams();
   const [role, setRole] = useState('');
   const [code, setCode] = useState('');
   const [showSmiley, setShowSmiley] = useState(false);
   const [studentsOnline, setStudentsOnline] = useState(0);
+
   //create socket ref - opening the socket once and use it
   const socketRef = useRef(null);
   const [isDarkMode, setIsDarkMode] = useState(true);
+
   // the student proggress feature from 0 to 100
   const [progress, setProgress] = useState(0);
   const navigate = useNavigate();
+  
   // This goes back one page - for the go back button
   const handleBack = () => {
     navigate(-1);
@@ -28,7 +32,7 @@ export default function BlockCodePage() {
 
   // Establish and manage WebSocket connection
   useEffect(() => {
-    const socket = new WebSocket(`ws://localhost:8000/ws/${id}`);
+    const socket = new WebSocket(`wss://online-coding-web-production-5c1a.up.railway.app/ws/${id}`);
     socketRef.current = socket;
 
     // WebSocket opened

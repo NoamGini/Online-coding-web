@@ -1,5 +1,4 @@
-import React, { useEffect } from 'react'
-import { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useNavigate } from "react-router-dom";
 
 
@@ -17,7 +16,7 @@ export default function LobbyPage() {
       setCodeBlockList(JSON.parse(cached));
     } else {
       //if no cached data, fetch from backend and save in sessionStorage
-      fetch('http://localhost:8000/codeblocks')
+      fetch(`https://online-coding-web-production-5c1a.up.railway.app/codeblocks`)
         .then(response => response.json())
         .then(data => {
           setCodeBlockList(data);
