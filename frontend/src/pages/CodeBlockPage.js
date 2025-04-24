@@ -91,7 +91,7 @@ export default function BlockCodePage() {
   useEffect(() => {
     // Initialize WebSocket connection
     const socket = new WebSocket(`${process.env.REACT_APP_WS_URL}/ws/${id}`);
-    socketRef.current = socket;
+socketRef.current = socket;
     socket.onmessage = (event) => {
       const data = JSON.parse(event.data);
 
@@ -142,14 +142,23 @@ export default function BlockCodePage() {
   }, [id, navigate]);
 
   // Send updated code to server if the user is a student and WebSocket is open
-  const handleCodeChange = onchange((updatedCode) => {
+  // const handleCodeChange = useCallback((updatedCode) => {
+  //   if (role === 'student' && socketRef.current?.readyState === WebSocket.OPEN) {
+  //     socketRef.current.send(JSON.stringify({
+  //       type: "code_update",
+  //       code: updatedCode,
+  //     }));
+  //   }
+  // },[role]);
+
+  const handleCodeChange = (updatedCode) => {
     if (role === 'student' && socketRef.current?.readyState === WebSocket.OPEN) {
       socketRef.current.send(JSON.stringify({
         type: "code_update",
         code: updatedCode,
       }));
     }
-  },);
+  };
 
   return (
     <div className="page-container">
