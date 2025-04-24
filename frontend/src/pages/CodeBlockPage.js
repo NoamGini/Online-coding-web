@@ -23,10 +23,10 @@ export default function BlockCodePage() {
 
   // the student proggress feature from 0 to 100
   const [progress, setProgress] = useState(0);
-  const codeRef = useRef(code);
+  //const codeRef = useRef(code);
   const navigate = useNavigate();
-  const stableId = useRef(id);
-  const stableNavigate = useRef(navigate);
+  //const stableId = useRef(id);
+  //const stableNavigate = useRef(navigate);
   
   // This goes back one page - for the go back button
   const handleBack = () => {
@@ -34,66 +34,15 @@ export default function BlockCodePage() {
   };
 
   // // Establish and manage WebSocket connection
-  // useEffect(() => {
-  //   const socket = new WebSocket(`${process.env.REACT_APP_WS_URL}/ws/${id}`);
-  //   socketRef.current = socket;
-
-  //   // WebSocket opened
-  //   socket.onopen = () => {
-  //     console.log('WebSocket connection established');
-  //   };
-
-  //   socket.onmessage = (event) => {
-  //     const data = JSON.parse(event.data);
-
-  //     switch (data.type) {
-  //       case 'init':
-  //         // set initial role, code, and online students count
-  //         setRole(data.role);
-  //         setCode(data.code);
-  //         setStudentsOnline(data.students_count);
-  //         break;
-
-  //       case 'code_update':
-  //         // update code and progress only if changed
-  //         if (data.code !== code) {
-  //           setCode(data.code);
-  //           setProgress(data.progress);
-  //         }
-  //         break;
-
-  //       case 'solution_match':
-  //         // show smiley animation for 3 seconds
-  //         setShowSmiley(true);
-  //         setTimeout(() => setShowSmiley(false), 3000);
-  //         break;
-
-  //       case 'students_count':
-  //         // Update number of students online
-  //         setStudentsOnline(data.students_count);
-  //         break;
-
-  //       case 'redirect':
-  //         // Redirect user and update code before navigating
-  //         setCode(data.code);
-  //         navigate("/");
-  //         break;
-
-  //       default:
-  //         console.warn("Unhandled WebSocket message type:", data.type);
-  //     }
-  //   };
-
-  //   return () => {
-  //     // clean up WebSocket
-  //     socket.close();
-  //   };
-  // }, [id, navigate]);
-
   useEffect(() => {
-    // Initialize WebSocket connection
-    const socket = new WebSocket(`${process.env.REACT_APP_WS_URL}/ws/${stableId.current}`);
+    const socket = new WebSocket(`${process.env.REACT_APP_WS_URL}/ws/${id}`);
     socketRef.current = socket;
+
+    // WebSocket opened
+    socket.onopen = () => {
+      console.log('WebSocket connection established');
+    };
+
     socket.onmessage = (event) => {
       const data = JSON.parse(event.data);
 
@@ -103,20 +52,18 @@ export default function BlockCodePage() {
           setRole(data.role);
           setCode(data.code);
           setStudentsOnline(data.students_count);
-          codeRef.current = data.code; // Update the ref with the new code
           break;
 
         case 'code_update':
-          // Only update if the code has actually changed
-          if (data.code !== codeRef.current) {
+          // update code and progress only if changed
+          if (data.code !== code) {
             setCode(data.code);
-            codeRef.current = data.code; // Update the ref with the new code
-            setProgress(data.progress)
+            setProgress(data.progress);
           }
           break;
 
         case 'solution_match':
-          // Show smiley animation for 3 seconds
+          // show smiley animation for 3 seconds
           setShowSmiley(true);
           setTimeout(() => setShowSmiley(false), 3000);
           break;
@@ -129,8 +76,7 @@ export default function BlockCodePage() {
         case 'redirect':
           // Redirect user and update code before navigating
           setCode(data.code);
-          stableNavigate.current('/');
-         // navigate("/");
+          navigate("/");
           break;
 
         default:
@@ -138,11 +84,66 @@ export default function BlockCodePage() {
       }
     };
 
-    // Clean up WebSocket connection on component unmount
     return () => {
+      // clean up WebSocket
       socket.close();
     };
-  }, []);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [id, navigate]);
+
+  // useEffect(() => {
+  //   // Initialize WebSocket connection
+  //   const socket = new WebSocket(`${process.env.REACT_APP_WS_URL}/ws/${stableId.current}`);
+  //   socketRef.current = socket;
+  //   socket.onmessage = (event) => {
+  //     const data = JSON.parse(event.data);
+
+  //     switch (data.type) {
+  //       case 'init':
+  //         // set initial role, code, and online students count
+  //         setRole(data.role);
+  //         setCode(data.code);
+  //         setStudentsOnline(data.students_count);
+  //         codeRef.current = data.code; // Update the ref with the new code
+  //         break;
+
+  //       case 'code_update':
+  //         // Only update if the code has actually changed
+  //         if (data.code !== codeRef.current) {
+  //           setCode(data.code);
+  //           codeRef.current = data.code; // Update the ref with the new code
+  //           setProgress(data.progress)
+  //         }
+  //         break;
+
+  //       case 'solution_match':
+  //         // Show smiley animation for 3 seconds
+  //         setShowSmiley(true);
+  //         setTimeout(() => setShowSmiley(false), 3000);
+  //         break;
+
+  //       case 'students_count':
+  //         // Update number of students online
+  //         setStudentsOnline(data.students_count);
+  //         break;
+
+  //       case 'redirect':
+  //         // Redirect user and update code before navigating
+  //         setCode(data.code);
+  //         stableNavigate.current('/');
+  //        // navigate("/");
+  //         break;
+
+  //       default:
+  //         console.warn("Unhandled WebSocket message type:", data.type);
+  //     }
+  //   };
+
+  //   // Clean up WebSocket connection on component unmount
+  //   return () => {
+  //     socket.close();
+  //   };
+  // }, []);
 
   // Send updated code to server if the user is a student and WebSocket is open
   const handleCodeChange = useCallback((updatedCode) => {
