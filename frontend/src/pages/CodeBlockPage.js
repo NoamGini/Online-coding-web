@@ -25,6 +25,8 @@ export default function BlockCodePage() {
   const [progress, setProgress] = useState(0);
   const codeRef = useRef(code);
   const navigate = useNavigate();
+  const stableId = useRef(id);
+  const stableNavigate = useRef(navigate);
   
   // This goes back one page - for the go back button
   const handleBack = () => {
@@ -90,8 +92,8 @@ export default function BlockCodePage() {
 
   useEffect(() => {
     // Initialize WebSocket connection
-    const socket = new WebSocket(`${process.env.REACT_APP_WS_URL}/ws/${id}`);
-socketRef.current = socket;
+    const socket = new WebSocket(`${process.env.REACT_APP_WS_URL}/ws/${stableId.current}`);
+    socketRef.current = socket;
     socket.onmessage = (event) => {
       const data = JSON.parse(event.data);
 
@@ -127,7 +129,8 @@ socketRef.current = socket;
         case 'redirect':
           // Redirect user and update code before navigating
           setCode(data.code);
-          navigate("/");
+          stableNavigate.current('/');
+         // navigate("/");
           break;
 
         default:
@@ -139,26 +142,18 @@ socketRef.current = socket;
     return () => {
       socket.close();
     };
-  }, [id, navigate]);
+  }, []);
 
   // Send updated code to server if the user is a student and WebSocket is open
-  // const handleCodeChange = useCallback((updatedCode) => {
-  //   if (role === 'student' && socketRef.current?.readyState === WebSocket.OPEN) {
-  //     socketRef.current.send(JSON.stringify({
-  //       type: "code_update",
-  //       code: updatedCode,
-  //     }));
-  //   }
-  // },[role]);
-
-  const handleCodeChange = (updatedCode) => {
+  const handleCodeChange = useCallback((updatedCode) => {
     if (role === 'student' && socketRef.current?.readyState === WebSocket.OPEN) {
       socketRef.current.send(JSON.stringify({
         type: "code_update",
         code: updatedCode,
       }));
     }
-  };
+  },[role]);
+
 
   return (
     <div className="page-container">
