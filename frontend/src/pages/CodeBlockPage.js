@@ -23,7 +23,7 @@ export default function BlockCodePage() {
 
   // the student proggress feature from 0 to 100
   const [progress, setProgress] = useState(0);
-  //const codeRef = useRef(code);
+  const codeRef = useRef(code);
   const navigate = useNavigate();
   //const stableId = useRef(id);
   //const stableNavigate = useRef(navigate);
@@ -56,9 +56,10 @@ export default function BlockCodePage() {
 
         case 'code_update':
           // update code and progress only if changed
-          if (data.code !== code) {
-            setCode(data.code);
-            setProgress(data.progress);
+          if (data.code !== codeRef.current) {
+              setCode(data.code);
+              codeRef.current = data.code; // Update the ref with the new code
+              setProgress(data.progress)
           }
           break;
 
@@ -88,7 +89,7 @@ export default function BlockCodePage() {
       // clean up WebSocket
       socket.close();
     };
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+  
   }, [id, navigate]);
 
   // useEffect(() => {
