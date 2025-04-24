@@ -32,7 +32,7 @@ export default function BlockCodePage() {
 
   // Establish and manage WebSocket connection
   useEffect(() => {
-    const socket = new WebSocket(`wss://online-coding-web-production-5c1a.up.railway.app/ws/${id}`);
+    const socket = new WebSocket(`{process.env.REACT_APP_WS_URL}/ws/${id}`);
     socketRef.current = socket;
 
     // WebSocket opened

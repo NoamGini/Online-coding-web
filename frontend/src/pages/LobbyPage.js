@@ -16,7 +16,7 @@ export default function LobbyPage() {
       setCodeBlockList(JSON.parse(cached));
     } else {
       //if no cached data, fetch from backend and save in sessionStorage
-      fetch(`https://online-coding-web-production-5c1a.up.railway.app/codeblocks`)
+      fetch(`${process.env.REACT_APP_API_URL}/codeblocks`)
         .then(response => response.json())
         .then(data => {
           setCodeBlockList(data);
