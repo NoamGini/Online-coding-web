@@ -23,6 +23,7 @@ export default function BlockCodePage() {
 
   // the student proggress feature from 0 to 100
   const [progress, setProgress] = useState(0);
+  const codeRef = useRef(code);
   const navigate = useNavigate();
   
   // This goes back one page - for the go back button
@@ -30,15 +31,66 @@ export default function BlockCodePage() {
     navigate(-1);
   };
 
-  // Establish and manage WebSocket connection
-  useEffect(() => {
-    const socket = new WebSocket(`{process.env.REACT_APP_WS_URL}/ws/${id}`);
-    socketRef.current = socket;
+  // // Establish and manage WebSocket connection
+  // useEffect(() => {
+  //   const socket = new WebSocket(`{process.env.REACT_APP_WS_URL}/ws/${id}`);
+  //   socketRef.current = socket;
 
-    // WebSocket opened
-    socket.onopen = () => {
-      console.log('WebSocket connection established');
-    };
+  //   // WebSocket opened
+  //   socket.onopen = () => {
+  //     console.log('WebSocket connection established');
+  //   };
+
+  //   socket.onmessage = (event) => {
+  //     const data = JSON.parse(event.data);
+
+  //     switch (data.type) {
+  //       case 'init':
+  //         // set initial role, code, and online students count
+  //         setRole(data.role);
+  //         setCode(data.code);
+  //         setStudentsOnline(data.students_count);
+  //         break;
+
+  //       case 'code_update':
+  //         // update code and progress only if changed
+  //         if (data.code !== code) {
+  //           setCode(data.code);
+  //           setProgress(data.progress);
+  //         }
+  //         break;
+
+  //       case 'solution_match':
+  //         // show smiley animation for 3 seconds
+  //         setShowSmiley(true);
+  //         setTimeout(() => setShowSmiley(false), 3000);
+  //         break;
+
+  //       case 'students_count':
+  //         // Update number of students online
+  //         setStudentsOnline(data.students_count);
+  //         break;
+
+  //       case 'redirect':
+  //         // Redirect user and update code before navigating
+  //         setCode(data.code);
+  //         navigate("/");
+  //         break;
+
+  //       default:
+  //         console.warn("Unhandled WebSocket message type:", data.type);
+  //     }
+  //   };
+
+  //   return () => {
+  //     // clean up WebSocket
+  //     socket.close();
+  //   };
+  // }, [id, navigate]);
+
+  useEffect(() => {
+    // Initialize WebSocket connection
+    const socket = new WebSocket(`ws://localhost:8000/ws/${id}`);
 
     socket.onmessage = (event) => {
       const data = JSON.parse(event.data);
@@ -49,18 +101,20 @@ export default function BlockCodePage() {
           setRole(data.role);
           setCode(data.code);
           setStudentsOnline(data.students_count);
+          codeRef.current = data.code; // Update the ref with the new code
           break;
 
         case 'code_update':
-          // update code and progress only if changed
-          if (data.code !== code) {
+          // Only update if the code has actually changed
+          if (data.code !== codeRef.current) {
             setCode(data.code);
-            setProgress(data.progress);
+            codeRef.current = data.code; // Update the ref with the new code
+            setProgress(data.progress)
           }
           break;
 
         case 'solution_match':
-          // show smiley animation for 3 seconds
+          // Show smiley animation for 3 seconds
           setShowSmiley(true);
           setTimeout(() => setShowSmiley(false), 3000);
           break;
@@ -81,8 +135,8 @@ export default function BlockCodePage() {
       }
     };
 
+    // Clean up WebSocket connection on component unmount
     return () => {
-      // clean up WebSocket
       socket.close();
     };
   }, [id, navigate]);
@@ -95,7 +149,7 @@ export default function BlockCodePage() {
         code: updatedCode,
       }));
     }
-  });
+  },[role]);
 
   return (
     <div className="page-container">
