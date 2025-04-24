@@ -58,7 +58,7 @@ class ConnectionManager:
         # update the progress according to the students code changes
         progress = self.calculate_progress(code_block_id, code)
 
-        # update the students
+        # update the students but not the one who wrote the code
         for conn in self.active_students_connections.get(code_block_id, []):
             if conn != sender_conn:
                 await conn.send_json({"type": "code_update", "code": code, "progress": progress})
@@ -121,7 +121,6 @@ class ConnectionManager:
 
 @router.websocket("/ws/{block_id}")
 async def web_socket_endpoint(block_id: str, web_socket: WebSocket):
-    print(f"Client {web_socket} trying to connect...")
     await web_socket.accept()
     # add the web socket to the mentor connection dict
     manager.connect(block_id, web_socket)
