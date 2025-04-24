@@ -153,7 +153,8 @@ export default function BlockCodePage() {
         code: updatedCode,
       }));
     }
-  },[role]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  },[]);
 
 
   return (
