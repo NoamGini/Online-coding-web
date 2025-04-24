@@ -59,7 +59,11 @@ export default function BlockCodePage() {
             codeRef.current = data.code;
 
           }
-          setProgress(data.progress)
+          break;
+          //update progress
+        case 'progress_update':
+            setProgress(data.progress);
+
           break;
 
         case 'solution_match':

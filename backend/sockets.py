@@ -62,6 +62,7 @@ class ConnectionManager:
         for conn in self.active_students_connections.get(code_block_id, []):
             if conn != sender_conn:
                 await conn.send_json({"type": "code_update", "code": code, "progress": progress})
+            await conn.send_json({"type": "progress_update", "progress": progress})
 
         # update the mentor
         mentor_conn = self.mentor_connections.get(code_block_id)
