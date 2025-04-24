@@ -142,14 +142,14 @@ export default function BlockCodePage() {
   }, [id, navigate]);
 
   // Send updated code to server if the user is a student and WebSocket is open
-  const handleCodeChange = useCallback((updatedCode) => {
+  const handleCodeChange = onchange((updatedCode) => {
     if (role === 'student' && socketRef.current?.readyState === WebSocket.OPEN) {
       socketRef.current.send(JSON.stringify({
         type: "code_update",
         code: updatedCode,
       }));
     }
-  },[role]);
+  },);
 
   return (
     <div className="page-container">
