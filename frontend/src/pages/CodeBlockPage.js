@@ -59,8 +59,9 @@ export default function BlockCodePage() {
           if (data.code !== codeRef.current) {
               setCode(data.code);
               codeRef.current = data.code; // Update the ref with the new code
-              setProgress(data.progress)
+              
           }
+          setProgress(data.progress)
           break;
 
         case 'solution_match':
