@@ -52,7 +52,7 @@ class ConnectionManager:
         return max(0, len(self.active_students_connections.get(code_block_id, [])))
 
     # update all the other users on the code's changes
-    async def broadcast_code(self, code_block_id: str, code: str):
+    async def broadcast_code(self, code_block_id: str, code: str,sender_conn=None):
         self.code_states[code_block_id] = code
 
         # update the progress according to the students code changes
@@ -60,7 +60,8 @@ class ConnectionManager:
 
         # update the students
         for conn in self.active_students_connections.get(code_block_id, []):
-            await conn.send_json({"type": "code_update", "code": code, "progress": progress})
+            if conn != sender_conn:
+                await conn.send_json({"type": "code_update", "code": code, "progress": progress})
 
         # update the mentor
         mentor_conn = self.mentor_connections.get(code_block_id)
@@ -144,7 +145,7 @@ async def web_socket_endpoint(block_id: str, web_socket: WebSocket):
             data = await web_socket.receive_json()
             # if the type is code update then get the new code and boradcast it to all
             if data["type"] == "code_update" and role == "student":
-                await manager.broadcast_code(block_id, data["code"])
+                await manager.broadcast_code(block_id, data["code"],sender_conn=web_socket)
 
     # handle diconnection
     except WebSocketDisconnect:
