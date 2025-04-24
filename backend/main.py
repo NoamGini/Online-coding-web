@@ -2,9 +2,10 @@ from fastapi import FastAPI
 import os
 from dotenv import load_dotenv
 from starlette.middleware.cors import CORSMiddleware
-from db import init_db
+from db import init_db, clear_codeblocks
 from sockets import router, manager
 
+#load env paths
 load_dotenv()
 origins = os.getenv("CORS_ORIGINS", "*").split(",")
 
@@ -17,11 +18,6 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
-
-@app.get("/")
-async def root():
-    return {"message": "Hello from FastAPI backend!"}
 
 
 @app.on_event("startup")
