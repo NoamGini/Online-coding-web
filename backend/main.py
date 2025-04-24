@@ -2,7 +2,7 @@ from fastapi import FastAPI
 import os
 from dotenv import load_dotenv
 from starlette.middleware.cors import CORSMiddleware
-from db import init_db, clear_codeblocks
+from db import init_db
 from sockets import router, manager
 
 #load env paths
