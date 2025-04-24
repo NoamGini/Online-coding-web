@@ -1,8 +1,6 @@
 .code-block-container {
-
     position: relative;
     width: 100%;
-
 }
 
 .editor-header {
@@ -30,6 +28,5 @@
     width: 8px;
     height: 8px;
     background-color: #ff9800;
-    /* orange for editor */
     border-radius: 50%;
 }

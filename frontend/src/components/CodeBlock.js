@@ -1,20 +1,22 @@
-import React, { useState, useCallback, useEffect } from 'react'
+import React, {useCallback } from 'react'
 import CodeMirror from '@uiw/react-codemirror';
 import { javascript } from '@codemirror/lang-javascript';
 import { okaidia } from '@uiw/codemirror-theme-okaidia';
+import { githubLight } from '@uiw/codemirror-theme-github'
 import './CodeBlock.css'
 
-export default function CodeBlock({ code, onChangeCode, role }) {
+export default function CodeBlock({ code, onChangeCode, role, isDarkMode}) {
 
-    const onChange = useCallback((val, viewUpdate) => {
-        console.log(val)
-        if (role === 'student') {
-            onChangeCode(val)
-        }
-    }, [onChangeCode, role]);
+    // when the code changes call onChanageCode function from props 
+    const onChange = useCallback((val) => {
+        onChangeCode(val)
+        
+    }, [onChangeCode,]);
 
 
     return (
+        <div>
+        
         <div className="code-block-container">
             <div className="editor-header">
                 <div className='role-indicator'>
@@ -22,7 +24,8 @@ export default function CodeBlock({ code, onChangeCode, role }) {
                     <span>{role} </span>
                 </div>
             </div>
-            <CodeMirror value={code} theme={okaidia} extensions={[javascript()]} onChange={onChange} editable={role === 'student'} />
+            <CodeMirror value={code} theme={isDarkMode ? okaidia : githubLight} extensions={[javascript()]} onChange={onChange} editable={role === 'student'} />
+        </div>
         </div>
     )
 }

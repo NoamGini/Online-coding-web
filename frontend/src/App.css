@@ -1,3 +1,7 @@
+* {
+  box-sizing: border-box;
+}
+
 body {
   background-color: #fff5d4;
   color: #2a692c;
@@ -9,28 +13,29 @@ body {
 
 h1 {
   text-align: center;
-  margin-top: 80px;
   font-size: 3rem;
+  margin-top: 30px;
 }
 
 ul {
   list-style-type: none;
-  padding: 0;
+  padding: 70px 0 0 0;
   text-align: center;
   justify-content: center;
   align-items: center;
   flex-direction: column;
-  height: 100vh;
+  display: flex;
+  height: 50vh;
 }
 
 li {
-  margin: 40px 0 0;
+  margin: 70px 0 0;
 }
 
 button {
   padding: 10px 20px;
   font-size: 1.5rem;
-  border: 1rem;
+  border: 1px solid #2a8653;
   background-color: #c4f1bb;
   color: #2a8653;
   border-radius: 15px;

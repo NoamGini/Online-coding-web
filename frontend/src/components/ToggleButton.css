@@ -1,0 +1,26 @@
+.toggle-container {
+    cursor: pointer;
+    display: inline-block;
+  }
+  
+.toggle-btn {
+    padding: 8px 20px;
+    border-radius: 30px;
+    background-color: #ccc;
+    color: white;
+    font-weight: bold;
+    text-align: center;
+    transition: all 0.3s ease;
+    user-select: none;
+    min-width: 120px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+  }
+  
+.toggle-btn.off {
+    background-color: #333;
+  }
+  
+.toggle-btn.on{
+    background-color: #f1c40f;
+    color: black;
+  }

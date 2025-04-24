@@ -1,4 +1,4 @@
-import { BrowserRouter, Router, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import LobbyPage from "./pages/LobbyPage";
 import CodeBlockPage from "./pages/CodeBlockPage";
 import './App.css'
