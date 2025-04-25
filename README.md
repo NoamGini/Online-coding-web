@@ -11,12 +11,12 @@ A collaborative real-time coding environment designed for students to master Jav
   - Displays the selected code block in a *text editor* and allow the students to edit the initial template they recieved. 
 
 - *Database*
-  - Stores code blocks (initial state contains at least 4)
+  - Stores code blocks (initial state contains 4)
 
 - *Tech Stack*
   - *Client:* React
-  - *Server:* Python - FASTAPI (also using websockets)
-  - *Database:* SQLModel - SQLlite
+  - *Server:* Python (FASTAPI + WebSockets)
+  - *Database:* SQLModel (SQLlite)
 ---
 
 ## ✨ Extra
@@ -30,6 +30,6 @@ A collaborative real-time coding environment designed for students to master Jav
 
 ## Deployment
 
-*Live App:* [[Online JS coding app](https://celebrated-cooperation-production.up.railway.app/)]  
+*App:* [[Online JS coding app](https://celebrated-cooperation-production.up.railway.app/)]  
 
 ---
