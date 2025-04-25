@@ -31,7 +31,6 @@ class ConnectionManager:
         self.mentor_connections: Dict[str, WebSocket] = {}
         self.code_states: Dict[str, str] = {}
         self.solutions: Dict[str, str] = {}
-        self.progress: Dict[str, int] = {}
 
     def load_solutions_from_db(self):
         with Session(engine) as session:
@@ -58,19 +57,18 @@ class ConnectionManager:
 
         # update the progress according to the students code changes
         progress = self.calculate_progress(code_block_id, code)
-        self.progress[code_block_id] = progress
+
         # update the students but not the one who wrote the code
         for conn in self.active_students_connections.get(code_block_id, []):
             if conn != sender_conn:
                 await conn.send_json({"type": "code_update", "code": code})
+            await conn.send_json({"type": "progress_update", "progress": progress})
 
         # update the mentor
         mentor_conn = self.mentor_connections.get(code_block_id)
         if mentor_conn:
             await mentor_conn.send_json({"type": "code_update", "code": code})
-
-        # broadcast progress
-        await self.broadcast_progress(code_block_id)
+            await mentor_conn.send_json({"type": "progress_update"})
 
         # Check the code matches the solution and update both students and mentor in the room
         if progress == 100:
@@ -80,15 +78,7 @@ class ConnectionManager:
             if mentor_conn:
                 await mentor_conn.send_json({"type": "solution_match"})
 
-    # update all - progress
-    async def broadcast_progress(self,code_block_id: str):
-        code_progress = self.progress[code_block_id]
-        for conn in self.active_students_connections.get(code_block_id, []):
-            await conn.send_json({"type": "progress_update", "progress": code_progress})
-        mentor_conn = self.mentor_connections.get(code_block_id)
-        await mentor_conn.send_json({"type": "progress_update", "progress": code_progress})
-
-    # update all of the student count - when student leave or connect
+    # upadte all of the student count - when student leave or connect
     async def broadcast_student_count(self, code_block_id: str):
         count = self.get_students_count(code_block_id)
         for conn in self.active_students_connections.get(code_block_id, []):
@@ -122,7 +112,7 @@ class ConnectionManager:
             return True
 
     def calculate_progress(self, code_block_id: str, student_code: str) -> int:
-        # calculating the progress of the students code by sequence matcher
+        # calculating the progress of the students code by squence matcher
         solution = self.solutions.get(code_block_id)
         expected = extract_editable_region_from_brace(solution)
         actual = extract_editable_region_from_brace(student_code)
@@ -134,7 +124,6 @@ class ConnectionManager:
 @router.websocket("/ws/{block_id}")
 async def web_socket_endpoint(block_id: str, web_socket: WebSocket):
     await web_socket.accept()
-
     # add the web socket to the mentor connection dict
     manager.connect(block_id, web_socket)
 
@@ -147,9 +136,8 @@ async def web_socket_endpoint(block_id: str, web_socket: WebSocket):
         "code": manager.code_states[block_id],
         "students_count": manager.get_students_count(block_id)
     })
-    # update all - student count changed and progress
+    # update all - student count changed
     await manager.broadcast_student_count(block_id)
-    await manager.broadcast_progress(block_id)
 
     try:
         # connections is open
