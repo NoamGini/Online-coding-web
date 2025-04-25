@@ -68,7 +68,7 @@ class ConnectionManager:
         mentor_conn = self.mentor_connections.get(code_block_id)
         if mentor_conn:
             await mentor_conn.send_json({"type": "code_update", "code": code})
-            await mentor_conn.send_json({"type": "progress_update"})
+            await mentor_conn.send_json({"type": "progress_update", "progress": progress})
 
         # Check the code matches the solution and update both students and mentor in the room
         if progress == 100:
