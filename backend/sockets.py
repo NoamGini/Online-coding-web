@@ -140,7 +140,7 @@ async def web_socket_endpoint(block_id: str, web_socket: WebSocket):
 
     # check whether the role is mentor or student
     role = "mentor" if manager.is_mentor(block_id, web_socket) else "student"
-    
+
     # send the initial connection message through websocket
     await web_socket.send_json({
         "type": "init",
