@@ -31,7 +31,7 @@ class ConnectionManager:
         self.mentor_connections: Dict[str, WebSocket] = {}
         self.code_states: Dict[str, str] = {}
         self.solutions: Dict[str, str] = {}
-        self.progress: Dict[str, str] = {}
+        self.progress: Dict[str, int] = {}
 
     def load_solutions_from_db(self):
         with Session(engine) as session:
@@ -140,7 +140,6 @@ async def web_socket_endpoint(block_id: str, web_socket: WebSocket):
 
     # check whether the role is mentor or student
     role = "mentor" if manager.is_mentor(block_id, web_socket) else "student"
-
     # send the initial connection message through websocket
     await web_socket.send_json({
         "type": "init",
